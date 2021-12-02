@@ -17,11 +17,11 @@ dDelta = 0
 
 for i in input:
     if i.startswith("forward "):
-        hDelta = int(i.removeprefix("forward ")) + hDelta
+        hDelta += int(i.removeprefix("forward "))
     elif i.startswith("down "):
-        dDelta = int(i.removeprefix("down ")) + dDelta
+        dDelta += int(i.removeprefix("down "))
     elif i.startswith("up "):
-        dDelta = dDelta - int(i.removeprefix("up "))
+        dDelta -= int(i.removeprefix("up "))
 
 print(hDelta)
 print(dDelta)
@@ -39,12 +39,12 @@ aim = 0
 for i in input:
     if i.startswith("forward "):
         x = int(i.removeprefix("forward "))
-        hDelta = x + hDelta
-        dDelta = dDelta + (aim * x)
+        hDelta += x
+        dDelta += (aim * x)
     elif i.startswith("down "):
-        aim = int(i.removeprefix("down ")) + aim
+        aim += int(i.removeprefix("down "))
     elif i.startswith("up "):
-        aim = aim - int(i.removeprefix("up "))
+        aim -= int(i.removeprefix("up "))
         
 print(hDelta)
 print(dDelta)
