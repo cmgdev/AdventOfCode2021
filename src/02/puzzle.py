@@ -31,3 +31,24 @@ print(product == int(expected1))
 
 expected2 = list(
     filter(lambda l: l.startswith("answer2:"), fileContents))[0].removeprefix("answer2:")
+
+hDelta = 0
+dDelta = 0
+aim = 0
+
+for i in input:
+    if i.startswith("forward "):
+        x = int(i.removeprefix("forward "))
+        hDelta = x + hDelta
+        dDelta = dDelta + (aim * x)
+    elif i.startswith("down "):
+        aim = int(i.removeprefix("down ")) + aim
+    elif i.startswith("up "):
+        aim = aim - int(i.removeprefix("up "))
+        
+print(hDelta)
+print(dDelta)
+print(aim)
+product = hDelta * dDelta
+print(product)
+print(product == int(expected2))

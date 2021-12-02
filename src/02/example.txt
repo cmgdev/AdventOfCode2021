@@ -5,4 +5,4 @@ up 3
 down 8
 forward 2
 answer1:150
-answer2:0
+answer2:900
