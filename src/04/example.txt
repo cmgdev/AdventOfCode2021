@@ -19,4 +19,4 @@
  2  0 12  3  7
  
 answer1:4512
-answer2:230
+answer2:1924
