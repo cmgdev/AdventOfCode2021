@@ -1,7 +1,9 @@
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Puzzle06 {
     final static boolean IS_TEST = false;
@@ -16,35 +18,52 @@ public class Puzzle06 {
             String expected2 = lines.stream().filter(l -> l.startsWith("answer2:")).map(l -> l.replace("answer2:", ""))
                     .findFirst().get();
 
-            int currentDay = 0;
             int maxDays = 80;
-            List<LanternFish> lanternFish = new ArrayList<>();
+            Map<Integer, Long> lanternFishByAge = new HashMap<>();
             for (String f : lines.get(0).split(",")) {
-                lanternFish.add(new LanternFish(Integer.parseInt(f)));
+                lanternFishByAge.merge(Integer.parseInt(f), 1l, (a, b) -> a + 1);
             }
 
-            while (currentDay < maxDays) {
-                System.out.println("Day " + currentDay + ": " + lanternFish.size());
-                List<LanternFish> newFish = new ArrayList<>();
+            lanternFishByAge = reproduceForXDays(maxDays, lanternFishByAge);
+            long numFish = lanternFishByAge.values().stream().mapToLong(v -> v).sum();
+            System.out.println(numFish);
+            System.out.println(numFish == Long.parseLong(expected1));
 
-                for (LanternFish fish : lanternFish) {
-                    if (fish.age == 0) {
-                        newFish.add(new LanternFish(6)); // reset fish
-                        newFish.add(new LanternFish(8)); // new fish
-                    } else {
-                        newFish.add(new LanternFish(fish.age - 1) );
-                    }
-                }
-
-                lanternFish = newFish;
-                currentDay++;
+            // part 2
+            maxDays = 256;
+            lanternFishByAge = new HashMap<>();
+            for (String f : lines.get(0).split(",")) {
+                lanternFishByAge.merge(Integer.parseInt(f), 1l, (a, b) -> a + 1);
             }
-            System.out.println(lanternFish.size());
-            System.out.println(lanternFish.size() == Integer.parseInt(expected1));
+
+            lanternFishByAge = reproduceForXDays(maxDays, lanternFishByAge);
+            numFish = lanternFishByAge.values().stream().mapToLong(v -> v).sum();
+            System.out.println(numFish);
+            System.out.println(numFish == Long.parseLong(expected2));
 
         } catch (Exception e) {
             System.out.println("Shit! " + e);
         }
+    }
+
+    private static Map<Integer, Long> reproduceForXDays(int maxDays, Map<Integer, Long> lanternFishByAge) {
+        int currentDay = 0;
+        while (currentDay < maxDays) {
+            System.out.println("Day " + currentDay + ": " + lanternFishByAge);
+
+            Map<Integer, Long> newMap = new HashMap<>();
+            for (Entry<Integer, Long> ageGroup : lanternFishByAge.entrySet()) {
+                if (ageGroup.getKey() == 0) {
+                    newMap.put(6, ageGroup.getValue());
+                    newMap.put(8, ageGroup.getValue());
+                } else {
+                    newMap.merge(ageGroup.getKey() - 1, ageGroup.getValue(), (a, b) -> a + b);
+                }
+            }
+            lanternFishByAge = newMap;
+            currentDay++;
+        }
+        return lanternFishByAge;
     }
 
     /**
