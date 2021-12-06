@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Puzzle {
+public class Puzzle04 {
 
     final static boolean IS_TEST = false;
     static Path input = Path.of("./src/04/" + (IS_TEST ? "example.txt" : "input.txt"));
