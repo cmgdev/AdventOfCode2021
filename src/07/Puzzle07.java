@@ -1,7 +1,9 @@
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class Puzzle07 {
@@ -20,24 +22,41 @@ public class Puzzle07 {
             List<Integer> positions = Stream.of(lines.get(0).split(","))
                     .map(Integer::parseInt).toList();
 
-            Integer lowestCost = Integer.MAX_VALUE;
-            int maxPosition = positions.stream().max(Integer::compareTo).get();
-            
-            for (int currentPosition = 0; currentPosition <= maxPosition; currentPosition++) {
-                int currentCost = 0;
-                for (Integer position : positions) {
-                    currentCost += Math.abs(position - currentPosition);
-                    if(currentCost > lowestCost){
-                        break;
-                    }
-                }
-                lowestCost = Math.min(lowestCost, currentCost);
-                System.out.println( "After position " + currentPosition + " lowest cost is " + lowestCost );
-            }
+            Long lowestCost = getLowestCost(positions, false);
+            System.out.println(lowestCost == Long.parseLong(expected1));
 
-            System.out.println(lowestCost == Integer.parseInt(expected1));
+            lowestCost = getLowestCost(positions, true);
+            System.out.println(lowestCost == Long.parseLong(expected2));
+
         } catch (Exception e) {
             System.out.println("Shit! " + e);
         }
+    }
+
+    private static Long getLowestCost(List<Integer> positions, boolean fuelPenalty) {
+        Long lowestCost = Long.MAX_VALUE;
+        int maxPosition = positions.stream().max(Integer::compareTo).get();
+        Map<Integer, Long> cache = new HashMap<>();
+
+        for (int currentPosition = 0; currentPosition <= maxPosition; currentPosition++) {
+            Long currentCost = 0l;
+            for (Integer position : positions) {
+                int distance = Math.abs(position - currentPosition);
+                if (fuelPenalty) {
+                    currentCost += cache.compute(distance, (d,v) -> LongStream.rangeClosed(1, d).sum());
+
+                } else {
+                    currentCost += distance;
+                }
+                if (currentCost > lowestCost) {
+                    break;
+                }
+            }
+            if( currentCost < lowestCost){
+                lowestCost = Math.min(lowestCost, currentCost);
+                System.out.println("After position " + currentPosition + " lowest cost is " + lowestCost);
+            }
+        }
+        return lowestCost;
     }
 }
