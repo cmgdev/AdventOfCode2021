@@ -10,17 +10,6 @@ public class Puzzle08 {
     final static boolean IS_TEST = false;
     static Path input = Path.of("./src/08/" + (IS_TEST ? "example.txt" : "input.txt"));
 
-    static final String ZERO = "abcefg";
-    static final String ONE = "cf";
-    static final String TWO = "acdeg";
-    static final String THREE = "acdfg";
-    static final String FOUR = "bcdf";
-    static final String FIVE = "abdfg";
-    static final String SIX = "abdefg";
-    static final String SEVEN = "acf";
-    static final String EIGHT = "abcdefg";
-    static final String NINE = "abcdfg";
-
     public static void main(String... args) {
         try {
             List<String> lines = Files.readAllLines(input);
@@ -175,9 +164,4 @@ public class Puzzle08 {
         return cSet;
     }
 
-    private static String sortCharsInString(String s) {
-        char[] chars = s.toCharArray();
-        Arrays.sort(chars);
-        return new String(chars);
-    }
 }
