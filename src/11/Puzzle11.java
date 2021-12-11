@@ -34,48 +34,59 @@ public class Puzzle11 {
                 x++;
             }
 
-            // System.out.println("Before any steps:");
-            // printOctopi(octopi);
             int maxSteps = 100;
-            long flashes = 0;
-
+            int flashes = 0;
             for (int step = 0; step < maxSteps; step++) {
-                Deque<Point> queue = new LinkedList<>();
-                queue.addAll(octopi.keySet());
-                Set<Point> flashedThisStep = new HashSet<>();
-
-                while(!queue.isEmpty()){
-                    Point next = queue.removeFirst();
-                    if( flashedThisStep.contains(next)){
-                        continue;
-                    }
-                    int energy = octopi.get(next) + 1;
-                    if( energy > 9){
-                        flashes++;
-                        energy = 0;
-                        octopi.put(next, energy);
-                        flashedThisStep.add(next);
-
-                        for( Point p : getPossibleNeighbors(next)){
-                            if(octopi.containsKey(p) && !flashedThisStep.contains(p)){
-                                queue.addFirst(p);
-                            }
-                        }
-                    }
-                    else{
-                        octopi.put(next, energy);
-                    }
-                }
-
-                // System.out.println("After step " + (step + 1) );
-                // printOctopi(octopi);
+                flashes += runStep(octopi);
             }
             System.out.println(flashes);
-            System.out.println(flashes == Long.parseLong(expected1));
+            System.out.println(flashes == Integer.parseInt(expected1));
+
+            System.out.println("\npart 2");
+            flashes = 0;
+            int step = 100;
+            while( flashes < 100){
+                flashes = runStep(octopi);
+                step++;
+            }
+
+            System.out.println(step);
+            System.out.println(step == Integer.parseInt(expected2));
 
         } catch (Exception e) {
             System.out.println("Shit! " + e);
         }
+    }
+
+    private static int runStep(Map<Point, Integer> octopi ){
+        Deque<Point> queue = new LinkedList<>();
+        queue.addAll(octopi.keySet());
+        Set<Point> flashedThisStep = new HashSet<>();
+        int flashes = 0;
+
+        while(!queue.isEmpty()){
+            Point next = queue.removeFirst();
+            if( flashedThisStep.contains(next)){
+                continue;
+            }
+            int energy = octopi.get(next) + 1;
+            if( energy > 9){
+                flashes++;
+                energy = 0;
+                octopi.put(next, energy);
+                flashedThisStep.add(next);
+
+                for( Point p : getPossibleNeighbors(next)){
+                    if(octopi.containsKey(p) && !flashedThisStep.contains(p)){
+                        queue.addFirst(p);
+                    }
+                }
+            }
+            else{
+                octopi.put(next, energy);
+            }
+        }
+        return flashes;
     }
 
     private static List<Point> getPossibleNeighbors(Point p) {
