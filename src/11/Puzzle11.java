@@ -76,7 +76,7 @@ public class Puzzle11 {
                 octopi.put(next, energy);
                 flashedThisStep.add(next);
 
-                for( Point p : getPossibleNeighbors(next)){
+                for( Point p : next.getPossibleNeighbors()){
                     if(octopi.containsKey(p) && !flashedThisStep.contains(p)){
                         queue.addFirst(p);
                     }
@@ -89,15 +89,6 @@ public class Puzzle11 {
         return flashes;
     }
 
-    private static List<Point> getPossibleNeighbors(Point p) {
-        int x = p.x;
-        int y = p.y;
-        return Arrays.asList(
-                new Point(x - 1, y - 1), new Point(x - 1, y), new Point(x - 1, y + 1),
-                new Point(x, y - 1), new Point(x, y + 1),
-                new Point(x + 1, y - 1), new Point(x + 1, y), new Point(x + 1, y + 1));
-    }
-
     private static void printOctopi(Map<Point, Integer> octopi) {
         for (int x = 0; x < 10; x++) {
             for (int y = 0; y < 10; y++) {
@@ -108,5 +99,11 @@ public class Puzzle11 {
     }
 
     record Point(int x, int y) {
+        List<Point> getPossibleNeighbors(){
+            return Arrays.asList(
+                new Point(x - 1, y - 1), new Point(x - 1, y), new Point(x - 1, y + 1),
+                new Point(x, y - 1), new Point(x, y + 1),
+                new Point(x + 1, y - 1), new Point(x + 1, y), new Point(x + 1, y + 1));
+        }
     }
 }
