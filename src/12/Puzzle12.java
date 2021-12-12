@@ -1,10 +1,14 @@
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Puzzle12 {
     final static boolean IS_TEST = false;
@@ -35,28 +39,49 @@ public class Puzzle12 {
                 caveBConnected.add(caveA);
                 caves.put(caveB, caveBConnected);
             }
-            int count = countPaths(caves, new LinkedList<>(), "start");
+
+            long count = countPaths(caves, new LinkedList<>(), "start", false);
             System.out.println(count);
-            System.out.println(count == Integer.parseInt(expected1));
+            System.out.println(count == Long.parseLong(expected1));
+
+            count = countPaths(caves, new LinkedList<>(), "start", true);
+            System.out.println(count);
+            System.out.println(count == Long.parseLong(expected2));
 
         } catch (Exception e) {
             System.out.println("Shit! " + e);
         }
     }
 
-    public static int countPaths(Map<String, List<String>> caves, LinkedList<String> path, String nextCave) {
+    public static long countPaths(Map<String, List<String>> caves, LinkedList<String> path, String nextCave,
+            boolean isPart2) {
         if (nextCave.equals("end")) {
             // path.add(nextCave);
             // System.out.println(path);
-            return 1;
+            return 1l;
         }
 
-        int count = 0;
+        long count = 0l;
         path.addLast(nextCave);
         List<String> connected = caves.get(nextCave);
+
+        Map<String, List<String>> smallCaves = path.stream().filter(c -> c.equals(c.toLowerCase()))
+                .collect(Collectors.groupingBy(Function.identity()));
+        int maxSmallCaves = smallCaves.values().stream().mapToInt(List::size).max().getAsInt();
         for (var cave : connected) {
-            if (cave.equals(cave.toUpperCase()) || !path.contains(cave)) {
-                count += countPaths(caves, new LinkedList<>(path), cave);
+            boolean isCaveAccessible = cave.equals(cave.toUpperCase());
+            if (isPart2) {
+                if (maxSmallCaves == 2) {
+                    isCaveAccessible |= !path.contains(cave);
+                } else {
+                    isCaveAccessible |= !cave.equals("start");
+                }
+            } else {
+                isCaveAccessible |= !path.contains(cave);
+            }
+
+            if (isCaveAccessible) {
+                count += countPaths(caves, new LinkedList<>(path), cave, isPart2);
             }
         }
         return count;
