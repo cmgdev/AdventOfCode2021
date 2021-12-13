@@ -892,4 +892,4 @@ fold along y=27
 fold along y=13
 fold along y=6
 answer1:747
-answer2:122134
+answer2:ARHZPCUH

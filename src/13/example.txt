@@ -19,4 +19,4 @@
 fold along y=7
 fold along x=5
 answer1:17
-answer2:122134
+answer2:O

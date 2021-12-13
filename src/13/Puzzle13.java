@@ -2,7 +2,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Puzzle13 {
@@ -31,13 +33,41 @@ public class Puzzle13 {
                     .map(l -> l.replace("fold along ", ""))
                     .toList();
 
-            points = doFold(points, instructions.get(0));
+            var count = 0;
+            for (var instruction : instructions) {
+                points = doFold(points, instruction);
+                if (count == 0) {
+                    System.out.println(points.size());
+                    System.out.println(points.size() == Integer.parseInt(expected1));
+                    count++;
+                } else {
+                    points = doFold(points, instruction);
+                }
+            }
 
-            System.out.println(points.size());
-            System.out.println(points.size() == Integer.parseInt(expected1));
+            System.out.println(points);
+            printPoints(points);
 
         } catch (Exception e) {
             System.out.println("Shit! " + e);
+        }
+    }
+
+    static void printPoints(Set<Point> points) {
+        int minX = 0;
+        int minY = 0;
+        int maxX = points.stream().mapToInt(Point::x).max().getAsInt();
+        int maxY = points.stream().mapToInt(Point::y).max().getAsInt();
+
+        Map<Point, Character> pointMap = points.stream()
+                .map(Function.identity())
+                .collect(Collectors.toMap(Function.identity(), v -> '#'));
+
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+                System.out.print(pointMap.getOrDefault(new Point(x, y), '.'));
+            }
+            System.out.println();
         }
     }
 
