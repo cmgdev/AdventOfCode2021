@@ -16,4 +16,4 @@ BC -> B
 CC -> N
 CN -> C
 answer1:1588
-answer2:O
+answer2:2188189693529

@@ -3,6 +3,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class Puzzle14 {
@@ -22,35 +23,52 @@ public class Puzzle14 {
 
             Map<String, String> rules = lines.stream()
                     .filter(l -> l.contains(" -> "))
-                    .collect(Collectors.toMap(l -> l.split(" -> ")[0], l -> l.split(" -> ")[1]));
+                    .collect(Collectors.toMap(l -> l.split(" -> ")[0],
+                            l -> l.split(" -> ")[0].charAt(0) + l.split(" -> ")[1]));
 
-            int steps = 10;
-            for (int step = 0; step < steps; step++) {
-                StringBuilder newTemplate = new StringBuilder();
-                for (int i = 0; i < template.length() - 1; i++) {
-                    String substr = template.substring(i, i + 2);
-                    if (rules.containsKey(substr)) {
-                        newTemplate.append(substr.charAt(0)).append(rules.get(substr));
-                    } else {
-                        newTemplate.append(substr);
-                    }
-                }
-                template = newTemplate.append(template.charAt(template.length() - 1)).toString();
-            }
+            long diff = runSteps(template, rules, 10);
 
-            Map<Character, Integer> charCounts = new HashMap<>();
-            for (char c : template.toCharArray()) {
-                charCounts.merge(c, 0, (a, b) -> a + 1);
-            }
+            System.out.println(diff);
+            System.out.println(diff == Long.parseLong(expected1));
 
-            int max = charCounts.values().stream().max(Integer::compareTo).get();
-            int min = charCounts.values().stream().min(Integer::compareTo).get();
-
-            System.out.println(max - min);
-            System.out.println((max - min) == Integer.parseInt(expected1));
+            diff = runSteps(template, rules, 40);
+            System.out.println(diff);
+            System.out.println(diff == Long.parseLong(expected2));
 
         } catch (Exception e) {
             System.out.println("Shit! " + e);
         }
+    }
+
+    private static Long runSteps(String template, Map<String, String> rules, int steps) {
+        Map<String, Long> pairCount = new HashMap<>();
+        Map<Character, Long> charCount = new HashMap<>();
+        for (int i = 0; i < template.length() - 1; i++) {
+            charCount.merge(template.charAt(i), 1l, (a, b) -> a + 1);
+
+            String substr = template.substring(i, i + 2);
+            pairCount.merge(substr, 1l, (a, b) -> a + 1);
+        }
+        charCount.merge(template.charAt(template.length() - 1), 1l, (a, b) -> a + 1);
+
+        for (int step = 0; step < steps; step++) {
+            Map<String, Long> newPairCount = new HashMap<>(pairCount);
+            for (Entry<String, Long> pair : pairCount.entrySet()) {
+                String pairKey = pair.getKey();
+                if (rules.containsKey(pairKey)) {
+                    String rightPairKey = rules.get(pairKey);
+                    String leftPairKey = String.valueOf(rightPairKey.charAt(1)) + String.valueOf(pairKey.charAt(1));
+                    long count = pair.getValue();
+                    newPairCount.merge(pairKey, 0l, (a, b) -> a - count);
+                    newPairCount.merge(rightPairKey, count, (a, b) -> a + count);
+                    newPairCount.merge(leftPairKey, count, (a, b) -> a + count);
+                    charCount.merge(rightPairKey.charAt(1), count, (a, b) -> a + count);
+                }
+            }
+            pairCount = newPairCount;
+        }
+        long max = charCount.values().stream().max(Long::compareTo).get();
+        long min = charCount.values().stream().min(Long::compareTo).get();
+        return max - min;
     }
 }
