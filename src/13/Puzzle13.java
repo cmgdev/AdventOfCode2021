@@ -65,7 +65,7 @@ public class Puzzle13 {
 
         for (int y = minY; y <= maxY; y++) {
             for (int x = minX; x <= maxX; x++) {
-                System.out.print(pointMap.getOrDefault(new Point(x, y), '.'));
+                System.out.print(pointMap.getOrDefault(new Point(x, y), ' '));
             }
             System.out.println();
         }
