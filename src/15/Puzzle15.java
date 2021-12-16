@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class Puzzle15 {
@@ -23,30 +24,82 @@ public class Puzzle15 {
 
             lines.removeIf(l -> l.startsWith("answer"));
 
-            Map<Point, Integer> map = new HashMap<>();
-            int maxX = lines.size();
-            int maxY = lines.get(0).length();
-            for (int x = 0; x < maxX; x++) {
-                String line = lines.get(x);
-                for (int y = 0; y < maxY; y++) {
-                    map.put(new Point(x, y), Integer.parseInt(line.substring(y, y + 1)));
-                }
-            }
+            Map<Point, Integer> map = buildMap(lines);
 
-            int shortest = findShortestDistanceByThePowerOfDijkstra(new Point(maxX - 1, maxY - 1), map);
+            int maxX = map.keySet().stream().mapToInt(Point::x).max().getAsInt();
+            int maxY = map.keySet().stream().mapToInt(Point::y).max().getAsInt();
+
+            int shortest = findShortestDistanceByThePowerOfDijkstra(new Point(maxX, maxY), map);
             System.out.println(shortest);
             System.out.println(shortest == Integer.parseInt(expected1));
+
+            map = expandMap(map);
+            maxX = map.keySet().stream().mapToInt(Point::x).max().getAsInt();
+            maxY = map.keySet().stream().mapToInt(Point::y).max().getAsInt();
+            shortest = findShortestDistanceByThePowerOfDijkstra(new Point(maxX, maxY), map);
+            System.out.println(shortest);
+            System.out.println(shortest == Integer.parseInt(expected2));
 
         } catch (Exception e) {
             System.out.println("Shit! " + e);
         }
     }
 
+    private static Map<Point, Integer> buildMap(List<String> lines) {
+        Map<Point, Integer> map = new HashMap<>();
+        int maxX = lines.size();
+        int maxY = lines.get(0).length();
+        for (int x = 0; x < maxX; x++) {
+            String line = lines.get(x);
+            for (int y = 0; y < maxY; y++) {
+                map.put(new Point(x, y), Integer.parseInt(line.substring(y, y + 1)));
+            }
+        }
+        return map;
+    }
+
+    private static Map<Point, Integer> expandMap(Map<Point, Integer> map) {
+        Map<Point, Integer> expandedMap = new HashMap<>();
+
+        int maxX = map.keySet().stream().mapToInt(Point::x).max().getAsInt() + 1;
+        int maxY = map.keySet().stream().mapToInt(Point::y).max().getAsInt() + 1;
+
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
+                for (Entry<Point, Integer> e : map.entrySet()) {
+                    Point p = e.getKey();
+                    Point newPoint = new Point(p.x + (maxX * x), p.y + (maxY * y));
+                    int newValue = e.getValue() + x + y;
+                    if (newValue > 9) {
+                        newValue -= 9;
+                    }
+                    expandedMap.put(newPoint, newValue);
+                }
+            }
+        }
+        // printMap(expandedMap);
+
+        return expandedMap;
+    }
+
+    private static void printMap(Map<Point, Integer> map) {
+        int maxX = map.keySet().stream().mapToInt(Point::x).max().getAsInt();
+        int maxY = map.keySet().stream().mapToInt(Point::y).max().getAsInt();
+
+        System.out.println();
+        for (int x = 0; x <= maxX; x++) {
+            for (int y = 0; y <= maxY; y++) {
+                System.out.print(map.get(new Point(x, y)));
+            }
+            System.out.println();
+        }
+    }
+
     private static Integer findShortestDistanceByThePowerOfDijkstra(Point end, Map<Point, Integer> map) {
         Map<Point, Integer> mapWithWeightedDistances = map.keySet().stream()
-        .collect(Collectors.toMap(k -> k, v -> Integer.MAX_VALUE));
+                .collect(Collectors.toMap(k -> k, v -> Integer.MAX_VALUE));
         mapWithWeightedDistances.put(new Point(0, 0), 0);
-        
+
         PriorityQueue<Point> queue = new PriorityQueue<>(Comparator.comparingInt(p -> mapWithWeightedDistances.get(p)));
         queue.add(new Point(0, 0));
 
