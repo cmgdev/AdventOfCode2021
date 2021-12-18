@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Puzzle16 {
-    final static boolean IS_TEST = true;
+    final static boolean IS_TEST = false;
     static Path input = Path.of("./src/16/" + (IS_TEST ? "example.txt" : "input.txt"));
 
     public static void main(String... args) {
@@ -23,7 +23,7 @@ public class Puzzle16 {
             }
 
             Packet p = new Packet(sb.toString());
-            System.out.println(p);
+            // System.out.println(p);
             System.out.println(p.getSumOfVersions());
             System.out.println(p.getSumOfVersions() == Integer.parseInt(expected1));
 
@@ -58,7 +58,7 @@ public class Puzzle16 {
         int version;
         int type;
         String literalValue = new String();
-        int remainingBits;
+        int bitLength;
         List<Packet> subPackets = new ArrayList<>();
         int lengthTypeId;
 
@@ -96,38 +96,27 @@ public class Puzzle16 {
 
                     while (subPacketUsed < subPacketBits) {
                         int endIndex = subCurrent + subPacketBits - subPacketUsed;
-                        if(endIndex > bin.length()){
-                            System.err.println("here's the problem");
-                        }
                         String subpacketString = bin.substring(subCurrent, endIndex);
                         Packet subPacket = new Packet(subpacketString);
                         this.subPackets.add(subPacket);
-                        subPacketUsed = subPacketBits - subPacket.remainingBits;
-                        subCurrent += subPacketUsed;
+                        subCurrent += subPacket.bitLength;
+                        subPacketUsed += subPacket.bitLength;
                     }
-                    current += subPacketUsed;
+                    current += subPacketBits;
                 } else if (lengthTypeId == 1) {
-                    if( current + 11 > bin.length()){
-                        System.err.println("here's the problem");
-                        
-                    }
                     int subPacketCount = Integer.parseInt(bin.substring(current, current + 11), 2);
                     current += 11;
-                    int remainingBits = bin.substring(current).length();
 
                     for (int i = 0; i < subPacketCount; i++) {
                         String subpacketString = bin.substring(current);
                         Packet subPacket = new Packet(subpacketString);
                         this.subPackets.add(subPacket);
-                        int subPacketBits = remainingBits - subPacket.remainingBits;
-                        remainingBits -= subPacketBits;
-                        current += subPacketBits;
+                        current += subPacket.bitLength;
                     }
                 }
             }
 
-            this.remainingBits = bin.length() - current;
-            System.out.println(this);
+            this.bitLength = current;
         }
 
         public void setVersion(int version) {
@@ -153,10 +142,6 @@ public class Puzzle16 {
             return 0l;
         }
 
-        public int getRemainingBits() {
-            return remainingBits;
-        }
-
         public int getSumOfVersions() {
             int sum = version;
             for (Packet p : subPackets) {
@@ -167,8 +152,7 @@ public class Puzzle16 {
 
         @Override
         public String toString() {
-            return "version: " + version + ", type: " + type + ", literalValue: " + literalValue + ", literal: "
-                    + getLiteral() + ", lengthTypeId: " + lengthTypeId + ", subPackets:\n\t " + subPackets;
+            return "version: " + version + ", lengthTypeId: " + lengthTypeId + ", subPackets:\n\t " + subPackets;
         }
     }
 }
