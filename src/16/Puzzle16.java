@@ -23,9 +23,11 @@ public class Puzzle16 {
             }
 
             Packet p = new Packet(sb.toString());
-            // System.out.println(p);
             System.out.println(p.getSumOfVersions());
             System.out.println(p.getSumOfVersions() == Integer.parseInt(expected1));
+
+            System.out.println(p.getValue());
+            System.out.println(p.getValue() == Long.parseLong(expected2));
 
         } catch (Exception e) {
             System.out.println("Shit! " + e);
@@ -117,6 +119,48 @@ public class Puzzle16 {
             }
 
             this.bitLength = current;
+        }
+
+        long getValue() {
+            long value = 0;
+
+            if (this.type == 0) {
+                // sum
+                for (Packet subPacket : this.subPackets) {
+                    value += subPacket.getValue();
+                }
+            } else if (this.type == 1) {
+                // product
+                value = 1;
+                for (Packet subPacket : this.subPackets) {
+                    value *= subPacket.getValue();
+                }
+            } else if (this.type == 2) {
+                // minimum
+                value = Long.MAX_VALUE;
+                for (Packet subPacket : this.subPackets) {
+                    value = Math.min(value, subPacket.getValue());
+                }
+            } else if (this.type == 3) {
+                // maximum
+                value = Long.MIN_VALUE;
+                for (Packet subPacket : this.subPackets) {
+                    value = Math.max(value, subPacket.getValue());
+                }
+            } else if (this.type == 4) {
+                return this.getLiteral();
+            } else if (this.type == 5) {
+                // greater than
+                value = subPackets.get(0).getValue() > subPackets.get(1).getValue() ? 1 : 0;
+            } else if (this.type == 6) {
+                // less than
+                value = subPackets.get(0).getValue() < subPackets.get(1).getValue() ? 1 : 0;
+            } else if (this.type == 7) {
+                // equal to
+                value = subPackets.get(0).getValue() == subPackets.get(1).getValue() ? 1 : 0;
+            }
+
+            return value;
         }
 
         public void setVersion(int version) {
