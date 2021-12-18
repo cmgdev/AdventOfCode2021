@@ -27,9 +27,9 @@ public class Puzzle17 {
             TargetArea t = new TargetArea(minX, maxX, minY, maxY);
 
             int highestY = 0;
-            for (int initXv = 0; initXv < 200; initXv++) {
-                for (int initYv = 0; initYv < 200; initYv++) {
-                    // System.out.println("running " + initXv + "," + initYv);
+            int count = 0;
+            for (int initXv = -1000; initXv < 1000; initXv++) {
+                for (int initYv = -1000; initYv < 1000; initYv++) {
                     int probeX = 0;
                     int probeY = 0;
                     int xv = initXv;
@@ -47,21 +47,21 @@ public class Puzzle17 {
                         }
                         yv--;
                     }
-                    if (t.isInTargetArea(probeX, probeY) && thisHighestY > highestY) {
-                        highestY = Math.max(highestY, thisHighestY);
-                        System.out.println("highestY is now " + highestY);
-                        System.out.println("init xv,yv is " + initXv + "," + initYv);
+                    if (t.isInTargetArea(probeX, probeY)) {
+                        count++;
+                        if (thisHighestY > highestY) {
+                            highestY = thisHighestY;
+                            System.out.println("highestY is now " + highestY);
+                            System.out.println("init xv,yv is " + initXv + "," + initYv);
+                        }
                     }
-                    // System.out.println(t.isInTargetArea(probeX, probeY));
-                    // System.out.println(t.isPastTargetArea(probeX, probeY));
-                    // if (t.isPastTargetArea(probeX, probeY)) {
-                    //     break;
-                    // }
                 }
             }
 
             System.out.println("highestY is " + highestY);
             System.out.println(highestY == Integer.parseInt(expected1));
+            System.out.println(count);
+            System.out.println(count == Integer.parseInt(expected2));
 
         } catch (Exception e) {
             System.out.println("Shit! " + e);
