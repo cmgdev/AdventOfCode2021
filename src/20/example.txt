@@ -6,4 +6,4 @@
 ..#..
 ..###
 answer1:35
-answer2:1908
+answer2:3351
