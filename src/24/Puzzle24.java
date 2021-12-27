@@ -52,19 +52,27 @@ public class Puzzle24 {
             System.out.println("Highest working model num is " + modelNum);
             System.out.println(modelNum.equals(new BigInteger(expected1)));
 
+            //62911941716111
+            gen = new ModelNumGenerator("62911941716110");
+            modelNum = gen.getPrevious();
+            while (!checkModelNum(lines, modelNum)) {
+                modelNum = gen.getNext();
+            }
+
+            System.out.println("Lowest working model num is " + modelNum);
+            System.out.println(modelNum.equals(new BigInteger(expected2)));
+
         } catch (Exception e) {
             System.out.println("Shit! " + e);
         }
     }
 
     static class ModelNumGenerator {
-        BigInteger modelNum = BigInteger.ONE;
+        BigInteger modelNum;
 
         ModelNumGenerator(String start) {
-            if (start != null) {
-                modelNum = new BigInteger(start);
-            }
-        }//99911993949684
+            this.modelNum = new BigInteger(start);
+        }
 
         BigInteger getNext() {
             modelNum = modelNum.subtract(BigInteger.ONE);
@@ -72,11 +80,16 @@ public class Puzzle24 {
                 String mnStr = modelNum.toString();
                 int i = mnStr.indexOf("0");
                 String next = Integer.toString(Integer.parseInt(mnStr.substring(i - 1, i + 1)) - 1);
-                if( next.length() == 1){
+                if (next.length() == 1) {
                     next = "0" + next;
                 }
                 modelNum = BigInteger.valueOf(Long.parseLong(mnStr.replace(mnStr.substring(i - 1, i + 1), next)));
             }
+            return modelNum;
+        }
+
+        BigInteger getPrevious() {
+            modelNum = modelNum.add(BigInteger.ONE);
             return modelNum;
         }
     }
